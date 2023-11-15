@@ -4,7 +4,7 @@
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
 
-    let timer = 5; // seconds
+    let timer = 5 * 60;
     let start;
     let mstime;
 
@@ -18,7 +18,28 @@
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
 
+    function randomDelay() {
+        return Math.random() * 3000 + 1000; // Random delay between 1 and 4 seconds
+    }
+
+    function randomDuration() {
+        return Math.random() * 2000 + 500; // Random duration between 0.5 and 2.5 seconds
+    }
+
+    function shakeScreen() {
+        bg.classList.add("shake");
+        setTimeout(() => {
+            bg.classList.remove("shake");
+            setTimeout(shakeScreen, randomDelay());
+        }, randomDuration());
+    }
+
     onMount(() => {
+        const url = new URL(window.location.href);
+        const params = new URLSearchParams(url.search);
+
+        timer = params.get("s") ? parseInt(params.get("s")) : 5 * 60;
+
         mstime = readable(new Date().getTime(), (set) => {
             let animationFrame;
             const next = () => {
@@ -85,22 +106,6 @@
             addKermit(randomIntFromInterval(1, 6));
             setTimeout(shakeScreen, randomDelay());
         }, timer * 1000);
-    }
-
-    function randomDelay() {
-        return Math.random() * 3000 + 1000; // Random delay between 1 and 4 seconds
-    }
-
-    function randomDuration() {
-        return Math.random() * 2000 + 500; // Random duration between 0.5 and 2.5 seconds
-    }
-
-    function shakeScreen() {
-        bg.classList.add("shake");
-        setTimeout(() => {
-            bg.classList.remove("shake");
-            setTimeout(shakeScreen, randomDelay());
-        }, randomDuration());
     }
 </script>
 
